@@ -1,3 +1,31 @@
+<?php 
+require "data.php";
+
+
+
+
+//check if form is submitted
+if (isset($_POST["movie_title"])){
+
+  array_push($movies, [
+    "movie_id" => end($movies)["movie_id"] + 1,
+    "movie_title" => $_POST["movie_title"],
+    "director" => $_POST["director"],
+    "year" => $_POST["year"],
+    "genre" => $_POST["genre_id"]
+  ]);
+
+  $_SESSION["movies"] = $movies;
+}
+
+if (isset($_GET["search"])){
+  $movies = array_filter($movies, function($movie){
+    return strpos(strtolower($movie["movie_title"]), strtolower($_GET["search"])) !== false;
+  });
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +42,12 @@
       <input type="search" class="form-control" name="search" placeholder="Search">
     </form>
     <section class="movies">
-      <a class="movie" href="movie.php">Labyrinth</a>
+    <?php foreach ($movies as $movie) :?>
+      <!-- below we use a query selector to get the id of the selected movie -->
+      <a class="movie" href="movie.php?id=<?php echo $movie["movie_id"]; ?>">
+        <?php echo $movie["movie_title"];?>
+      </a>
+    <?php endforeach; ?>
     </section>
   </main>
 </body>
